@@ -90,7 +90,11 @@ func main() {
 		return
 	}
 
-	tgBot.GetUpdates()
+	for {
+		tgBot.GetUpdates()
+		log.Println("Bot disconnected, restarting...")
+		time.Sleep(5 * time.Second)
+	}
 
 	// apiKey := cfg.ZerodhaApiKey
 	// accessToken := "4D7OLs1ohPrlbokqX6UsxbWVIqcdktN3"
