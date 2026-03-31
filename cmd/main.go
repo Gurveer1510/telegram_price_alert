@@ -3,10 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/Gurveer1510/telegram_price_tracker/internal/config"
 	"github.com/Gurveer1510/telegram_price_tracker/internal/db"
+	"github.com/Gurveer1510/telegram_price_tracker/internal/repository"
+	"github.com/Gurveer1510/telegram_price_tracker/internal/telegram"
+	"github.com/Gurveer1510/telegram_price_tracker/internal/usecase"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 	kitemodels "github.com/zerodha/gokiteconnect/v4/models"
 	kiteticker "github.com/zerodha/gokiteconnect/v4/ticker"
@@ -63,7 +67,7 @@ func onNoReconnect(attempt int) {
 
 // Triggered when order update is received
 func onOrderUpdate(order kiteconnect.Order) {
-	fmt.Printf("Order: ", order.OrderID)
+	fmt.Printf("Order: %s", order.OrderID)
 }
 
 func main() {
@@ -77,23 +81,34 @@ func main() {
 
 	defer db.Pool.Close()
 
-	apiKey := cfg.ZerodhaApiKey
-	accessToken := "4D7OLs1ohPrlbokqX6UsxbWVIqcdktN3"
+	repo := repository.NewTelegramRepo(db)
+	usecase := usecase.NewTelegramUseCase(repo)
+
+	tgBot, err := telegram.Newbot(cfg.BotToken, usecase)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	tgBot.GetUpdates()
+
+	// apiKey := cfg.ZerodhaApiKey
+	// accessToken := "4D7OLs1ohPrlbokqX6UsxbWVIqcdktN3"
 	// apiKey := "my_api_key"
 	// accessToken := "my_access_token"
 
 	// Create new Kite ticker instance
-	ticker = kiteticker.New(apiKey, accessToken)
+	// ticker = kiteticker.New(apiKey, accessToken)
 
-	// Assign callbacks
-	ticker.OnError(onError)
-	ticker.OnClose(onClose)
-	ticker.OnConnect(onConnect)
-	ticker.OnReconnect(onReconnect)
-	ticker.OnNoReconnect(onNoReconnect)
-	ticker.OnTick(onTick)
-	ticker.OnOrderUpdate(onOrderUpdate)
+	// // Assign callbacks
+	// ticker.OnError(onError)
+	// ticker.OnClose(onClose)
+	// ticker.OnConnect(onConnect)
+	// ticker.OnReconnect(onReconnect)
+	// ticker.OnNoReconnect(onNoReconnect)
+	// ticker.OnTick(onTick)
+	// ticker.OnOrderUpdate(onOrderUpdate)
 
-	// Start the connection
-	ticker.Serve()
+	// // Start the connection
+	// ticker.Serve()
 }
