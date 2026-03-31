@@ -10,6 +10,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -19,11 +20,27 @@ type DB struct {
 }
 
 func DSN(conf *config.Config) string {
-	return fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=%s", conf.DBUser, conf.DBPass, conf.DBHost, conf.DBName, conf.SSL)
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s/%s?sslmode=%s&default_query_exec_mode=exec",
+		conf.DBUser,
+		conf.DBPass,
+		conf.DBHost,
+		conf.DBName,
+		conf.SSL,
+	)
 }
 
 func NewPool(ctx context.Context, dsn string) (*DB, error) {
-	pool, err := pgxpool.New(ctx, dsn)
+	poolConfig, err := pgxpool.ParseConfig(dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	// Neon pooler endpoints sit behind PgBouncer. pgx's default prepared-statement
+	// cache can produce type/preparation mismatches there, so use non-cached exec mode.
+	poolConfig.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
+
+	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
 	if err != nil {
 		return nil, err
 	}

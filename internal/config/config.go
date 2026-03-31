@@ -10,6 +10,7 @@ type Config struct {
 	DBPass        string
 	SSL           string
 	ChanBind      string
+	BotToken      string
 }
 
 func GetConfig() (*Config, error) {
@@ -29,6 +30,7 @@ func GetConfig() (*Config, error) {
 		DBPass:        viper.GetString("DATABASE_PASSWORD"),
 		SSL:           viper.GetString("SSL"),
 		ChanBind:      viper.GetString("CHANNEL_BINDING"),
+		BotToken:      viper.GetString("BOT_TOKEN"),
 	}
 
 	return config, nil
