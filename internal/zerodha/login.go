@@ -5,17 +5,23 @@ import (
 	"io"
 	"log"
 	"net/http"
-
-	"github.com/Gurveer1510/telegram_price_tracker/internal/config"
 )
 
-func LoginWithZerodha() error {
-	cfg, err := config.GetConfig()
-	if err != nil {
-		return err
-	}
+type ZerodhaClient struct {
+	ApiKey      string
+	AccessToken string
+}
 
-	resp, err := http.Get(fmt.Sprintf("https://kite.zerodha.com/connect/login?v=3&api_key=%v", cfg.ZerodhaApiKey))
+func NewZerodhaClient(accessToken, apiKey string) *ZerodhaClient {
+	return &ZerodhaClient{
+		ApiKey:      apiKey,
+		AccessToken: accessToken,
+	}
+}
+
+func (z *ZerodhaClient) LoginWithZerodha() error {
+
+	resp, err := http.Get(fmt.Sprintf("https://kite.zerodha.com/connect/login?v=3&api_key=%v", z.ApiKey))
 	if err != nil {
 		return err
 	}

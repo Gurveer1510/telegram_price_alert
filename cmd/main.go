@@ -1,16 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/Gurveer1510/telegram_price_tracker/internal/config"
-	"github.com/Gurveer1510/telegram_price_tracker/internal/db"
-	"github.com/Gurveer1510/telegram_price_tracker/internal/repository"
-	"github.com/Gurveer1510/telegram_price_tracker/internal/telegram"
-	"github.com/Gurveer1510/telegram_price_tracker/internal/usecase"
+	"github.com/Gurveer1510/telegram_price_tracker/internal/zerodha"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 	kitemodels "github.com/zerodha/gokiteconnect/v4/models"
 	kiteticker "github.com/zerodha/gokiteconnect/v4/ticker"
@@ -73,46 +68,46 @@ func onOrderUpdate(order kiteconnect.Order) {
 func main() {
 	cfg, _ := config.GetConfig()
 
-	dsn := db.DSN(cfg)
-	db, err := db.NewPool(context.Background(), dsn)
-	if err != nil {
-		fmt.Println(err)
-	}
+	// dsn := db.DSN(cfg)
+	// db, err := db.NewPool(context.Background(), dsn)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-	defer db.Pool.Close()
+	// defer db.Pool.Close()
 
-	repo := repository.NewTelegramRepo(db)
-	usecase := usecase.NewTelegramUseCase(repo)
+	// repo := repository.NewTelegramRepo(db)
+	// usecase := usecase.NewTelegramUseCase(repo)
 
-	tgBot, err := telegram.Newbot(cfg.BotToken, usecase)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	// tgBot, err := telegram.Newbot(cfg.BotToken, usecase)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
 
-	for {
-		tgBot.GetUpdates()
-		log.Println("Bot disconnected, restarting...")
-		time.Sleep(5 * time.Second)
-	}
+	// for {
+	// 	tgBot.GetUpdates()
+	// 	log.Println("Bot disconnected, restarting...")
+	// 	time.Sleep(5 * time.Second)
+	// }
 
-	// apiKey := cfg.ZerodhaApiKey
-	// accessToken := "4D7OLs1ohPrlbokqX6UsxbWVIqcdktN3"
-	// apiKey := "my_api_key"
-	// accessToken := "my_access_token"
-
+	apiKey := cfg.ZerodhaApiKey
+	accessToken := "q1F8jDeeOP9qTlB6O75XGosHpzYShJ3n"
+	zerodhaclient := zerodha.NewZerodhaClient(accessToken, apiKey)
+	zerodhaclient.GetInstruments()
 	// Create new Kite ticker instance
-	// ticker = kiteticker.New(apiKey, accessToken)
+	ticker = kiteticker.New(apiKey, accessToken)
 
 	// // Assign callbacks
-	// ticker.OnError(onError)
-	// ticker.OnClose(onClose)
-	// ticker.OnConnect(onConnect)
-	// ticker.OnReconnect(onReconnect)
-	// ticker.OnNoReconnect(onNoReconnect)
-	// ticker.OnTick(onTick)
-	// ticker.OnOrderUpdate(onOrderUpdate)
+	ticker.OnError(onError)
+	ticker.OnClose(onClose)
+	ticker.OnConnect(onConnect)
+	ticker.OnReconnect(onReconnect)
+	ticker.OnNoReconnect(onNoReconnect)
+	ticker.OnTick(onTick)
+	ticker.OnOrderUpdate(onOrderUpdate)
 
 	// // Start the connection
-	// ticker.Serve()
+	ticker.Serve()
+
 }

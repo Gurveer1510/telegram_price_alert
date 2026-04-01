@@ -1,1 +1,2 @@
 .env
+internal/instrument_dump/zerodha.csv
