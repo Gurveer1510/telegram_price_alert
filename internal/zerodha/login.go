@@ -14,7 +14,7 @@ type ZerodhaClient struct {
 	AccessToken string
 }
 
-func NewZerodhaClient(accessToken, apiKey string) *ZerodhaClient {
+func NewZerodhaClient(apiKey, accessToken string) *ZerodhaClient {
 	return &ZerodhaClient{
 		ApiKey:      apiKey,
 		AccessToken: accessToken,
