@@ -43,10 +43,10 @@ func (tb *TelegramBot) GetUpdates() {
 		}
 
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
-
+		
 		switch update.Message.Command() {
 		case "help":
-			msg.Text = "I understand /setalert <instrument> <price> <condition>"
+			msg.Text = "I understand /setalert <instrument> <price> <above|below>"
 		case "setalert":
 			args := strings.Fields(update.Message.CommandArguments())
 
@@ -68,18 +68,35 @@ func (tb *TelegramBot) GetUpdates() {
 			}
 			newAlert := &types.Alert{
 				Instrument_name: instrument,
-				ChatId: update.Message.Chat.ID,
-				Exchange: "NSE",
-				Trigger_price: price,
-				Condition: condition,
+				ChatId:          update.Message.Chat.ID,
+				Exchange:        "NSE",
+				Trigger_price:   price,
+				Condition:       condition,
 			}
-			_, err = tb.TGUsecase.CreateAlert(context.Background(), newAlert )
+			_, err = tb.TGUsecase.CreateAlert(context.Background(), newAlert)
 			if err != nil {
 				log.Println(err.Error())
 				msg.Text = "Something went wrong :("
 				break
 			}
 			msg.Text = fmt.Sprintf("Alert set! %s @ %.2f (%s)", instrument, price, condition)
+		case "setaccesstoken":
+			if update.Message.From.UserName != "gurveer1510" {
+				msg.Text = "Not authorized to use this command"
+			} else {
+				args := strings.Fields(update.Message.CommandArguments())
+				if len(args) != 1 {
+					msg.Text = "Usage: /setaccesstoken <token>"
+				} else {
+					token := args[0]
+					err := tb.TGUsecase.StoreAccessToken(context.Background(), token)
+					if err != nil{
+						msg.Text = err.Error()
+						break
+					}
+					msg.Text = "Access token set successfully"
+				}
+			}
 
 		default:
 			msg.Text = "I don't know that command"
