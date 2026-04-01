@@ -11,6 +11,10 @@ type Config struct {
 	SSL           string
 	ChanBind      string
 	BotToken      string
+	KiteUser      string
+	KitePassword  string
+	KiteSecret    string
+	TotpSecret    string
 }
 
 func GetConfig() (*Config, error) {
@@ -31,6 +35,10 @@ func GetConfig() (*Config, error) {
 		SSL:           viper.GetString("SSL"),
 		ChanBind:      viper.GetString("CHANNEL_BINDING"),
 		BotToken:      viper.GetString("BOT_TOKEN"),
+		KiteUser:      viper.GetString("KITE_USER"),
+		KitePassword:  viper.GetString("KITE_PASSWORD"),
+		TotpSecret:    viper.GetString("TOTP_SECRET"),
+		KiteSecret:    viper.GetString("KITE_SECRET"),
 	}
 
 	return config, nil
