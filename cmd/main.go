@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/Gurveer1510/telegram_price_tracker/internal/config"
-	"github.com/Gurveer1510/telegram_price_tracker/internal/zerodha"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 	kitemodels "github.com/zerodha/gokiteconnect/v4/models"
 	kiteticker "github.com/zerodha/gokiteconnect/v4/ticker"
@@ -93,10 +92,11 @@ func main() {
 
 	apiKey := cfg.ZerodhaApiKey
 	accessToken := "q1F8jDeeOP9qTlB6O75XGosHpzYShJ3n"
-	zerodhaclient := zerodha.NewZerodhaClient(accessToken, apiKey)
-	zerodhaclient.GetInstruments()
+	// zerodhaclient := zerodha.NewZerodhaClient(accessToken, apiKey)
+	// zerodhaclient.
+	// zerodhaclient.GetInstruments()
 	// Create new Kite ticker instance
-	ticker = kiteticker.New(apiKey, accessToken)
+	ticker := kiteticker.New(apiKey, accessToken)
 
 	// // Assign callbacks
 	ticker.OnError(onError)

@@ -1,6 +1,8 @@
 package zerodha
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -50,9 +52,21 @@ func (z *ZerodhaClient) LoginWithUserPassZerodha(username, password string) erro
 
 	urlString := "https://kite.zerodha.com/api/login"
 
-	body := 
+	body := LoginPayload{
+		Username: username,
+		Password: password,
+	}
+	payload, _ := json.Marshal(body)
 
-	resp, err := http.Post(urlString, )
+	resp, err := http.Post(urlString, "application/json", bytes.NewBuffer(payload))
+	if err != nil {
+		log.Println(err)
+	}
+
+	bodyBytes, err := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	log.Println("RESPONSE BODY \n ", string(bodyBytes))
 
 	return nil
 }
