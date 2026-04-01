@@ -91,14 +91,14 @@ func main() {
 		return
 	}
 
-	apiKey := cfg.ZerodhaApiKey
-	accessToken, err := usecase.GetLatestAccessToken(context.Background())
+	// apiKey := cfg.ZerodhaApiKey
+	// accessToken, err := usecase.GetLatestAccessToken(context.Background())
 	if err != nil {
 		log.Println(err.Error())
 	}
-	zerodhaclient := zerodha.NewZerodhaClient(apiKey, accessToken)
-	zerodhaclient.GetInstruments()
-
+	zClient := zerodha.NewZerodhaClient(cfg.ZerodhaApiKey, cfg.KiteUser, cfg.KitePassword, cfg.TotpSecret, cfg.KiteSecret)
+	usecase.StoreAccessToken(context.Background(), zClient.AccessToken)
+	zClient.GetInstruments()
 
 	// Create new Kite ticker instance
 	// ticker := kiteticker.New(apiKey, accessToken)
