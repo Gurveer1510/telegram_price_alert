@@ -40,3 +40,19 @@ func (z *ZerodhaClient) LoginWithZerodha() error {
 	defer resp.Body.Close()
 	return nil
 }
+
+type LoginPayload struct {
+	Username	string
+	Password	string
+}
+
+func (z *ZerodhaClient) LoginWithUserPassZerodha(username, password string) error {
+
+	urlString := "https://kite.zerodha.com/api/login"
+
+	body := 
+
+	resp, err := http.Post(urlString, )
+
+	return nil
+}
