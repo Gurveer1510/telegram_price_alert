@@ -40,7 +40,9 @@ func (ac *AlertChecker) CheckAlerts(tick kitemodels.Tick) {
 		msg := tgbotapi.NewMessage(alert.ChatId, fmt.Sprintf("🔔 %v hit %.2f (your alert: %v %.2f)", alert.Instrument_name, price, alert.Condition, alert.Trigger_price))
 		ac.bot.Send(msg)
 		ac.repo.DeleteAlert(ctx, alert.ID)
-		ac.ZerodhaTicker.Unsubscribe(uint32(alert.Instrument_token))
+		remaining, _ := ac.repo.GetAlerts(ctx, tick.InstrumentToken)
+		if len(remaining) == 0 {
+			ac.ZerodhaTicker.Unsubscribe(uint32(alert.Instrument_token))
+		}
 	}
-
 }

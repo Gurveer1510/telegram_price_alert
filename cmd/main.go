@@ -39,6 +39,10 @@ func main() {
 
 	alertCheck := usecase.NewAlertChecker(repo, tgBot.Bot, nil)
 	ticker := zerodha.NewZerodhaTicker(cfg.ZerodhaApiKey, zClient.AccessToken, alertCheck)
+	existingAlerts, _ := repo.GetAllAlerts(context.TODO())
+	for _, token := range existingAlerts {
+		ticker.Subscribe(uint32(token.Instrument_token))
+	}
 	alertCheck.ZerodhaTicker = ticker
 	uc := usecase.NewTelegramUseCase(repo, ticker)
 	tgBot.TGUsecase = uc

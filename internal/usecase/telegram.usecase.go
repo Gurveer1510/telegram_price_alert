@@ -37,7 +37,7 @@ func (tuc *TelegramUsecase) CreateAlert(ctx context.Context, alert *types.Alert)
 	alert.Exchange = "NSE"
 	id, err := tuc.repo.Create(ctx, alert)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 	tuc.tickerService.Subscribe(uint32(alert.Instrument_token))
 	return id, nil
