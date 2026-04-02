@@ -41,11 +41,11 @@ func main() {
 	ticker := zerodha.NewZerodhaTicker(cfg.ZerodhaApiKey, zClient.AccessToken, alertChecker)
 	uc := usecase.NewTelegramUseCase(repo, ticker)
 	tgBot.TGUsecase = uc
+	ticker.Start()
 
 	if err := uc.StoreAccessToken(context.Background(), zClient.AccessToken); err != nil {
 		log.Println(err)
 	}
-
 	for {
 		tgBot.GetUpdates()
 		log.Println("Bot disconnected, restarting...")
