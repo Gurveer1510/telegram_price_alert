@@ -43,7 +43,7 @@ func (tb *TelegramBot) GetUpdates() {
 		}
 
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
-		
+
 		switch update.Message.Command() {
 		case "help":
 			msg.Text = "I understand /setalert <instrument> <price> <above|below>"
@@ -90,7 +90,7 @@ func (tb *TelegramBot) GetUpdates() {
 				} else {
 					token := args[0]
 					err := tb.TGUsecase.StoreAccessToken(context.Background(), token)
-					if err != nil{
+					if err != nil {
 						msg.Text = err.Error()
 						break
 					}

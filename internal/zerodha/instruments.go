@@ -9,7 +9,7 @@ import (
 )
 
 func (z *ZerodhaClient) GetInstruments() error {
-	url := "https://api.kite.trade/instruments"
+	url := "https://api.kite.trade/instruments/NSE"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
