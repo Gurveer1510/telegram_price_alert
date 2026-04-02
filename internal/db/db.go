@@ -63,7 +63,6 @@ func runMigrations(dsn string) error {
 	}
 
 	defer db.Close()
-
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		return fmt.Errorf("migrate driver: %w", err)

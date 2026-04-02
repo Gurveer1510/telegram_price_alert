@@ -1,6 +1,7 @@
 package types
 
 type Alert struct {
+	ID               int
 	Instrument_token int
 	Instrument_name  string
 	ChatId           int64
