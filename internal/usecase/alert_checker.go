@@ -6,17 +6,19 @@ import (
 	"log"
 
 	"github.com/Gurveer1510/telegram_price_tracker/internal/repository"
+	"github.com/Gurveer1510/telegram_price_tracker/internal/zerodha"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	kitemodels "github.com/zerodha/gokiteconnect/v4/models"
 )
 
 type AlertChecker struct {
-	repo *repository.TelegramZerodhaRepo
-	bot  *tgbotapi.BotAPI
+	repo          *repository.TelegramZerodhaRepo
+	bot           *tgbotapi.BotAPI
+	ZerodhaTicker *zerodha.ZerodhaTicker
 }
 
-func NewAlertChecker(repo *repository.TelegramZerodhaRepo, bot *tgbotapi.BotAPI) *AlertChecker {
-	return &AlertChecker{repo: repo, bot: bot}
+func NewAlertChecker(repo *repository.TelegramZerodhaRepo, bot *tgbotapi.BotAPI, tickerSvc *zerodha.ZerodhaTicker) *AlertChecker {
+	return &AlertChecker{repo: repo, bot: bot, ZerodhaTicker: tickerSvc}
 }
 
 func (ac *AlertChecker) CheckAlerts(tick kitemodels.Tick) {
@@ -38,6 +40,7 @@ func (ac *AlertChecker) CheckAlerts(tick kitemodels.Tick) {
 		msg := tgbotapi.NewMessage(alert.ChatId, fmt.Sprintf("🔔 %v hit %.2f (your alert: %v %.2f)", alert.Instrument_name, price, alert.Condition, alert.Trigger_price))
 		ac.bot.Send(msg)
 		ac.repo.DeleteAlert(ctx, alert.ID)
+		ac.ZerodhaTicker.Unsubscribe(uint32(alert.Instrument_token))
 	}
 
 }

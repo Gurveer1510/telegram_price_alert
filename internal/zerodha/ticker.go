@@ -61,6 +61,14 @@ func (z *ZerodhaTicker) Subscribe(token uint32) {
 	z.subscribeTokens([]uint32{token})
 }
 
+func (z *ZerodhaTicker) Unsubscribe(token uint32) {
+	z.mu.Lock()
+	delete(z.subscribedTokens, token)
+	z.mu.Unlock()
+
+	z.ticker.Unsubscribe([]uint32{token})
+}
+
 func (z *ZerodhaTicker) OnError(err error) {
 	z.mu.Lock()
 	z.connected = false
@@ -82,6 +90,7 @@ func (z *ZerodhaTicker) OnConnect() {
 }
 
 func (z *ZerodhaTicker) OnTick(tick kitemodels.Tick) {
+	log.Println("TICK FOUND:",tick)
 	z.checker.CheckAlerts(tick)
 }
 
